@@ -1,41 +1,52 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-if (!API_KEY) console.warn('VITE_TMDB_API_KEY is not set. Add it to your .env file.');
+console.log("TMDB API Key:", API_KEY);
 
-const BASE = 'https://api.themoviedb.org/3';
-const tmdb = axios.create({ baseURL: BASE, params: { api_key: API_KEY } });
+const BASE_URL = "https://api.themoviedb.org/3";
 
-export async function fetchTrending(page = 1) {
-  const res = await tmdb.get('/trending/movie/week', { params: { page } });
-  return res.data;
-}
+// Fetch trending movies
+export const fetchTrending = async () => {
+  const response = await axios.get(
+    `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`
+  );
+  return response.data.results;
+};
 
-export async function fetchPopular(page = 1) {
-  const res = await tmdb.get('/movie/popular', { params: { page } });
-  return res.data;
-}
+// Search movies by query
+export const searchMovies = async (query) => {
+  const response = await axios.get(
+    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`
+  );
+  return response.data.results;
+};
 
-export async function searchMovies(query, page = 1) {
-  const res = await tmdb.get('/search/movie', { params: { query, page } });
-  return res.data;
-}
+// Discover movies (with filters)
+export const discoverMovies = async (filters = {}) => {
+  const { genre, year, sort } = filters;
+  const response = await axios.get(`${BASE_URL}/discover/movie`, {
+    params: {
+      api_key: API_KEY,
+      with_genres: genre || "",
+      primary_release_year: year || "",
+      sort_by: sort || "popularity.desc",
+    },
+  });
+  return response.data.results;
+};
 
-export async function getMovieDetails(id) {
-  const res = await tmdb.get(`/movie/${id}`, { params: { append_to_response: 'credits,videos,similar' } });
-  return res.data;
-}
+// Get single movie details
+export const getMovieDetails = async (id) => {
+  const response = await axios.get(
+    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`
+  );
+  return response.data;
+};
 
-export async function fetchGenres() {
-  const res = await tmdb.get('/genre/movie/list');
-  return res.data.genres;
-}
-
-export async function discoverMovies({ page = 1, with_genres, year, sort_by }) {
-  const params = { page };
-  if (with_genres) params.with_genres = with_genres;
-  if (year) params.primary_release_year = year;
-  if (sort_by) params.sort_by = sort_by;
-  const res = await tmdb.get('/discover/movie', { params });
-  return res.data;
-}
+// Fetch genres
+export const fetchGenres = async () => {
+  const response = await axios.get(
+    `${BASE_URL}/genre/movie/list?api_key=${API_KEY}`
+  );
+  return response.data.genres;
+};

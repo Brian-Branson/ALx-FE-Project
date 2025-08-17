@@ -1,107 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import SearchBar from '../components/SearchBar.jsx';
-import MovieList from '../components/MovieList.jsx';
-import Filter from '../components/Filter.jsx';
-import Pagination from '../components/Pagination.jsx';
-import { fetchTrending, searchMovies, discoverMovies, fetchGenres } from '../api/tmdb.js';
+"use client";
+import { useEffect, useState } from "react";
+import {
+  fetchTrending,
+  searchMovies,
+  discoverMovies,
+  fetchGenres,
+} from "../api/tmdb.js";
 
-export default function Home() {
+const HomePage = () => {
   const [movies, setMovies] = useState([]);
-  const [mode, setMode] = useState('trending'); // 'trending' | 'search' | 'discover'
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [genres, setGenres] = useState([]);
-  const [filters, setFilters] = useState({ genre: '', year: '', sort_by: '' });
+  const [query, setQuery] = useState("");
+  const [filters, setFilters] = useState({
+    genre: "",
+    year: "",
+    sort: "popularity.desc",
+  });
 
+  // Load trending movies by default
   useEffect(() => {
-    fetchGenres().then(setGenres).catch(()=>{});
+    const loadTrending = async () => {
+      try {
+        const trending = await fetchTrending();
+        setMovies(trending);
+      } catch (err) {
+        console.error("Error fetching trending movies:", err);
+      }
+    };
+
+    const loadGenres = async () => {
+      try {
+        const genreList = await fetchGenres();
+        setGenres(genreList);
+      } catch (err) {
+        console.error("Error fetching genres:", err);
+      }
+    };
+
+    loadTrending();
+    loadGenres();
   }, []);
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, page, filters]);
+  // Handle search
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!query) return;
 
-  async function load() {
-    setLoading(true);
-    setError(null);
     try {
-      let data;
-      if (mode === 'trending') {
-        data = await fetchTrending(page);
-      } else if (mode === 'search') {
-        data = await searchMovies(query, page);
-      } else {
-        data = await discoverMovies({
-          page,
-          with_genres: filters.genre || undefined,
-          year: filters.year || undefined,
-          sort_by: filters.sort_by || undefined
-        });
-      }
-      setMovies(data.results || []);
-      setTotalPages(Math.min(data.total_pages || 1, 500)); // TMDB caps pages at 500
+      const results = await searchMovies(query);
+      setMovies(results);
     } catch (err) {
-      console.error(err);
-      setError('Failed to fetch movies. Try again.');
-    } finally {
-      setLoading(false);
+      console.error("Error searching movies:", err);
     }
-  }
+  };
 
-  function onSearch(q) {
-    setQuery(q);
-    setPage(1);
-    if (!q) setMode('trending'); else setMode('search');
-  }
-
-  function onApplyFilters(newFilters) {
-    setFilters(newFilters);
-    setPage(1);
-    setMode('discover');
-  }
-
-  function onClearFilters() {
-    setFilters({ genre: '', year: '', sort_by: '' });
-    setPage(1);
-    setMode('trending');
-  }
+  // Handle filters
+  const handleFilter = async () => {
+    try {
+      const results = await discoverMovies(filters);
+      setMovies(results);
+    } catch (err) {
+      console.error("Error discovering movies:", err);
+    }
+  };
 
   return (
-    <div>
-      <div className="mb-4">
-        <SearchBar onSearch={onSearch} initialValue={query} />
+    <main className="p-6">
+      <h1 className="text-3xl font-bold mb-6">🎬 Movie Explorer</h1>
+
+      {/* Search */}
+      <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+        <input
+          type="text"
+          placeholder="Search movies..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="border px-4 py-2 rounded w-full"
+        />
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+          Search
+        </button>
+      </form>
+
+      {/* Filters */}
+      <div className="flex gap-4 mb-6">
+        {/* Genre Filter */}
+        <select
+          value={filters.genre}
+          onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All Genres</option>
+          {genres.map((g) => (
+            <option key={g.id} value={g.id}>
+              {g.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Year Filter */}
+        <input
+          type="number"
+          placeholder="Year"
+          value={filters.year}
+          onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+          className="border px-3 py-2 rounded w-28"
+        />
+
+        {/* Sort Filter */}
+        <select
+          value={filters.sort}
+          onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="popularity.desc">Popularity ↓</option>
+          <option value="popularity.asc">Popularity ↑</option>
+          <option value="release_date.desc">Release Date ↓</option>
+          <option value="release_date.asc">Release Date ↑</option>
+          <option value="vote_average.desc">Rating ↓</option>
+          <option value="vote_average.asc">Rating ↑</option>
+        </select>
+
+        <button
+          onClick={handleFilter}
+          className="bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Apply
+        </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4">
-        <aside className="md:w-64">
-          <Filter genres={genres} onApply={onApplyFilters} onClear={onClearFilters} current={filters} />
-        </aside>
-
-        <section className="flex-1">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">
-              {mode === 'trending' ? 'Trending This Week' : mode === 'search' ? `Search results for "${query}"` : 'Discover'}
-            </h2>
-            <div className="text-sm text-gray-600">Page {page} / {totalPages}</div>
-          </div>
-
-          {loading && <div className="py-12 text-center">Loading...</div>}
-          {error && <div className="text-red-500">{error}</div>}
-
-          {!loading && !error && (
-            <>
-              <MovieList movies={movies} />
-              <div className="mt-6">
-                <Pagination page={page} totalPages={totalPages} onChange={(p) => setPage(p)} />
+      {/* Movie Grid */}
+      {movies.length === 0 ? (
+        <p>No movies found 😢</p>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {movies.map((movie) => (
+            <div
+              key={movie.id}
+              className="border rounded shadow hover:scale-105 transition"
+            >
+              {movie.poster_path ? (
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  className="w-full rounded-t"
+                />
+              ) : (
+                <div className="h-64 bg-gray-300 flex items-center justify-center text-gray-600">
+                  No Image
+                </div>
+              )}
+              <div className="p-2">
+                <h2 className="font-semibold text-sm">{movie.title}</h2>
+                <p className="text-xs text-gray-500">{movie.release_date}</p>
               </div>
-            </>
-          )}
-        </section>
-      </div>
-    </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
   );
-}
+};
+
+export default HomePage;

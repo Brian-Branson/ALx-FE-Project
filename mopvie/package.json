@@ -1,5 +1,6 @@
 {
   "name": "letterbox-movie-db",
+  "type": "module",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -15,6 +16,7 @@
     "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.12",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.41",
