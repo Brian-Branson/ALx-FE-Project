@@ -13,7 +13,7 @@ function Layout() {
       </header>
 
       {/* Page content */}
-      <main className="flex-1 max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-6">
+      <main className="sm:px-6">
         <Outlet />
       </main >
     </div>

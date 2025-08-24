@@ -63,7 +63,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="p-6 bg-white min-h-screen text-white">
+    <main className="p-6 bg-white min-h-screen text-white flex-1 max-w-7xl mx-auto px-2  lg:px-8 py-6">
       <h1 className="text-3xl font-bold mb-6">🎬 Movie Explorer</h1>
 
       {/* Search */}
