@@ -12,12 +12,6 @@ export default function Header() {
             <div className="text-xs text-gray-500 -mt-0.5">Movie DB</div>
           </div>
         </Link>
-
-        <nav className="hidden md:flex gap-4 items-center text-sm text-gray-600">
-          <Link to="./pages/TrendingShowsPage.jsx" className="hover:underline">
-            Trending Shows
-          </Link>
-        </nav>
       </div>
     </header>
   );
