@@ -1,22 +1,21 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home.jsx';
-import MovieDetail from './pages/MovieDetail.jsx';
-import NotFound from './pages/NotFound.jsx';
-import Header from './components/Header.jsx';
-import Footer from './components/Footer.jsx';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import HomePage from "./pages/HomePage";
+import TrendingShowsPage from "./pages/TrendingShowsPage";
+import DetailPage from "./pages/DetailPage";
 
-export default function App() {
+function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/movie/:id" element={<MovieDetail />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      {/* Wrap routes with Layout */}
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/trending" element={<TrendingShowsPage />} />
+        <Route path="/movie/:movieId" element={<DetailPage />} />
+      </Route>
+    </Routes>
   );
 }
+
+export default App;

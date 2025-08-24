@@ -4,3 +4,6 @@
 
 /* small custom styles */
 html, body, #root { height: 100%; }
+.main {
+  background: #8866e0;
+}

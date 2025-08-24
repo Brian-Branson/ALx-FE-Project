@@ -14,8 +14,9 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex gap-4 items-center text-sm text-gray-600">
-          <Link to="/" className="hover:text-sky-600">Home</Link>
-          <a href="https://www.themoviedb.org" target="_blank" rel="noreferrer" className="hover:text-sky-600">TMDB</a>
+          <Link to="./pages/TrendingShowsPage.jsx" className="hover:underline">
+            Trending Shows
+          </Link>
         </nav>
       </div>
     </header>

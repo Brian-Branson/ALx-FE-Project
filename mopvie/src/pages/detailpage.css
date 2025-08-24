@@ -1,0 +1,77 @@
+.detail-page {
+  position: relative;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 15, 15, 0.8);
+  padding: 3rem 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  gap: 2rem;
+}
+
+.poster {
+  width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+}
+
+.info {
+  flex: 1;
+}
+
+.info h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info .year {
+  color: #bbb;
+  font-weight: normal;
+}
+
+.meta {
+  font-size: 1rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.circle {
+  background: #081c22;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #21d07a;
+  font-size: 1.2rem;
+}
+
+.overview {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}

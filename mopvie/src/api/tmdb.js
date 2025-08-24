@@ -13,6 +13,16 @@ export const fetchTrending = async () => {
   return response.data.results;
 };
 
+// Fetch TV show details
+export const fetchTrendingShows = async () => {
+  const response = await axios.get(
+    `${BASE_URL}/trending/tv/week?api_key=${API_KEY}`
+  );
+  return response.data.results;
+};
+
+
+
 // Search movies by query
 export const searchMovies = async (query) => {
   const response = await axios.get(

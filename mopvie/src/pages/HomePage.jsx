@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // React Router Link
 import {
   fetchTrending,
   searchMovies,
@@ -17,7 +18,6 @@ const HomePage = () => {
     sort: "popularity.desc",
   });
 
-  // Load trending movies by default
   useEffect(() => {
     const loadTrending = async () => {
       try {
@@ -41,7 +41,6 @@ const HomePage = () => {
     loadGenres();
   }, []);
 
-  // Handle search
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query) return;
@@ -54,7 +53,6 @@ const HomePage = () => {
     }
   };
 
-  // Handle filters
   const handleFilter = async () => {
     try {
       const results = await discoverMovies(filters);
@@ -65,7 +63,7 @@ const HomePage = () => {
   };
 
   return (
-    <main className="p-6">
+    <main className="p-6 bg-white min-h-screen text-white">
       <h1 className="text-3xl font-bold mb-6">🎬 Movie Explorer</h1>
 
       {/* Search */}
@@ -75,20 +73,22 @@ const HomePage = () => {
           placeholder="Search movies..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="flex-1 p-2 rounded-lg bg-gray-800 text-white outline-none"
         />
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
           Search
         </button>
       </form>
 
       {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        {/* Genre Filter */}
+      <div className="flex flex-wrap gap-4 mb-6">
         <select
           value={filters.genre}
           onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
-          className="border px-3 py-2 rounded"
+          className="p-2 rounded-lg bg-gray-800 text-white"
         >
           <option value="">All Genres</option>
           {genres.map((g) => (
@@ -98,20 +98,18 @@ const HomePage = () => {
           ))}
         </select>
 
-        {/* Year Filter */}
         <input
           type="number"
           placeholder="Year"
           value={filters.year}
           onChange={(e) => setFilters({ ...filters, year: e.target.value })}
-          className="border px-3 py-2 rounded w-28"
+          className="p-2 rounded-lg bg-gray-800 text-white w-28"
         />
 
-        {/* Sort Filter */}
         <select
           value={filters.sort}
           onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
-          className="border px-3 py-2 rounded"
+          className="p-2 rounded-lg bg-gray-800 text-white"
         >
           <option value="popularity.desc">Popularity ↓</option>
           <option value="popularity.asc">Popularity ↑</option>
@@ -123,7 +121,7 @@ const HomePage = () => {
 
         <button
           onClick={handleFilter}
-          className="bg-green-600 text-white px-4 py-2 rounded"
+          className="bg-green-600 px-4 py-2 rounded-lg hover:bg-green-700"
         >
           Apply
         </button>
@@ -135,26 +133,27 @@ const HomePage = () => {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {movies.map((movie) => (
-            <div
+            <Link
               key={movie.id}
-              className="border rounded shadow hover:scale-105 transition"
+              to={`/movie/${movie.id}`} // Navigate to your details page
+              className="border rounded shadow hover:scale-105 transition overflow-hidden bg-gray-800"
             >
               {movie.poster_path ? (
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
-                  className="w-full rounded-t"
+                  className="w-full h-72 object-cover"
                 />
               ) : (
-                <div className="h-64 bg-gray-300 flex items-center justify-center text-gray-600">
+                <div className="h-72 flex items-center justify-center bg-gray-700">
                   No Image
                 </div>
               )}
               <div className="p-2">
-                <h2 className="font-semibold text-sm">{movie.title}</h2>
-                <p className="text-xs text-gray-500">{movie.release_date}</p>
+                <h2 className="font-semibold text-sm truncate">{movie.title}</h2>
+                <p className="text-xs text-gray-400">{movie.release_date || "Unknown"}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
